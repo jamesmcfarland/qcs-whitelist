@@ -12,10 +12,10 @@
     <PackageReference Include="Google.Apis.Sheets.v4" Version="1.55.0.2371" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(Configuration)' == 'Debug'">
+  <ItemGroup >
     <None Update="credentials.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
-  <ItemGroup Condition="'$(Configuration)' == 'Debug'">
+  <ItemGroup >
     <None Update="spreadsheets.txt" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
