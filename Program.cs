@@ -122,8 +122,13 @@ namespace QCS
                     List<String> jsonData = new List<string>();
                     foreach (WhitelistApproved wLA in usersToWhitelist)
                     {
+                        try {
 
                         jsonData.Add(await wLA.GetJSON());
+                        }
+                        catch {
+                            Console.WriteLine("Error Processing user "+ wLA.Username);
+                        }
                     }
                     String json = "[" + string.Join(',', jsonData) + "]";
                     Console.WriteLine(json);
