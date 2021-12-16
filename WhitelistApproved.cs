@@ -29,7 +29,7 @@ namespace QCS
             PlayerDB? playerInfo = (await JsonSerializer.DeserializeAsync<PlayerDB>(await stream));
 
             if(playerInfo!=null && playerInfo.code=="player.found"){
-                Console.WriteLine(String.Format("UUID {0} found for {1}", playerInfo.data.player.id, this.Username));
+                //Console.WriteLine(String.Format("UUID {0} found for {1}", playerInfo.data.player.id, this.Username));
                 this.uuid = playerInfo.data.player.id;
             }
             else {
