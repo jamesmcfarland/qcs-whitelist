@@ -25,7 +25,7 @@ namespace QCS
             String[] spData = File.ReadAllLines("spreadsheets.txt");
             String formSheetID = spData[0];
             String membersSheetID = spData[1];
-            String emailValidationOverrideCode = spData[2];
+            String emailValidationOverrideCode = spData[2].ToLower();
 
             do
             {
@@ -64,7 +64,7 @@ namespace QCS
                 IList<IList<Object>> formValues = formResponse.Values;
 
                 //Get current member emails
-                 String currentMembersRange = "Members!E2:E";
+                String currentMembersRange = "Members!E2:E";
                 SpreadsheetsResource.ValuesResource.GetRequest currentMembersRequest =
                         service.Spreadsheets.Values.Get(membersSheetID, currentMembersRange);
 
@@ -82,7 +82,7 @@ namespace QCS
                         {
                             if (row[0] != null && row[1] != null)
                             {
-                                usersToCheck.Add(new WhiteListRequest(row[1].ToString(), row[0].ToString()));
+                                usersToCheck.Add(new WhiteListRequest(row[1].ToString(), row[0].ToString().ToLower().Trim()));
                             }
                         }
                     }
@@ -92,7 +92,7 @@ namespace QCS
                     {
 
                         if (el.Count > 0)
-                            qcsEmails.Add((el[0]).ToString());
+                            qcsEmails.Add((el[0]).ToString().ToLower().Trim());
                         else
                         {
                             Console.WriteLine("Empty email detected. Please check spreadsheet");
@@ -106,20 +106,30 @@ namespace QCS
 
                     foreach (WhiteListRequest wr in usersToCheck)
                     {
-                        if(wr.Email==emailValidationOverrideCode){
-                            usersToWhitelist.Add(new WhitelistApproved(wr));
-
-                        }
-
-                        if (qcsEmails.Find(e => e == wr.Email) != "")
+                        if (wr.Email == emailValidationOverrideCode)
                         {
-                            //Email exists, we are good to go.
                             usersToWhitelist.Add(new WhitelistApproved(wr));
+
                         }
                         else
                         {
-                            //User does not exist
+                            
+
+
+                    
+                            if (qcsEmails.Find(e=>e==wr.Email)!=null)
+                            {
+                                //Email exists, we are good to go.
+                                usersToWhitelist.Add(new WhitelistApproved(wr));
+                            }
+                            else
+                            {
+                                //User does not exist
+                                Console.WriteLine(String.Format("Could not find {0} in the member database ({1})", wr.Email, wr.Username));
+                            }
+
                         }
+
                     }
 
 
@@ -128,12 +138,14 @@ namespace QCS
                     List<String> jsonData = new List<string>();
                     foreach (WhitelistApproved wLA in usersToWhitelist)
                     {
-                        try {
+                        try
+                        {
 
-                        jsonData.Add(await wLA.GetJSON());
+                            jsonData.Add(await wLA.GetJSON());
                         }
-                        catch {
-                            Console.WriteLine("Error Processing user "+ wLA.Username);
+                        catch
+                        {
+                            Console.WriteLine("Error Processing user " + wLA.Username);
                         }
                     }
                     String json = "[" + string.Join(',', jsonData) + "]";
