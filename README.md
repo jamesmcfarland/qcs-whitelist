@@ -3,5 +3,5 @@ This is a basic .NET 6 program which will take a set of minecraft IGNs and an em
 
 You'll need to provide a credentials.json and spreadsheets.txt file: 
 - The `credentials.json` file can be produced from the google cloud console (see any of the sheets api quickstart tutorials)
-- The `spreadsheets.txt` file is just the spreadsheet IDs for the form and member list, on seperate lines, in that order
+- The `spreadsheets.txt` file is just the spreadsheet IDs for the form and member list, along with an email override code (skips the email checking for that user and adds them regardless), on seperate lines, in that order
     e.g. for this sheet: https://docs.google.com/spreadsheets/d/YyYYx_xxxxx6xxxx0xxxxxZZZzzZZZ_yY-xXXXXxXXx, `YyYYx_xxxxx6xxxx0xxxxxZZZzzZZZ_yY-xXXXXxXXx` is the ID

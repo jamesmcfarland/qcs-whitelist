@@ -25,6 +25,7 @@ namespace QCS
             String[] spData = File.ReadAllLines("spreadsheets.txt");
             String formSheetID = spData[0];
             String membersSheetID = spData[1];
+            String emailValidationOverrideCode = spData[2];
 
             do
             {
@@ -105,6 +106,11 @@ namespace QCS
 
                     foreach (WhiteListRequest wr in usersToCheck)
                     {
+                        if(wr.Email==emailValidationOverrideCode){
+                            usersToWhitelist.Add(new WhitelistApproved(wr));
+
+                        }
+
                         if (qcsEmails.Find(e => e == wr.Email) != "")
                         {
                             //Email exists, we are good to go.
