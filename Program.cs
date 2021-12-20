@@ -64,7 +64,7 @@ namespace QCS
                 IList<IList<Object>> formValues = formResponse.Values;
 
                 //Get current member emails
-                String currentMembersRange = "Members!E2:E";
+                String currentMembersRange = "FULL LIST (FOR SU)!E2:F";
                 SpreadsheetsResource.ValuesResource.GetRequest currentMembersRequest =
                         service.Spreadsheets.Values.Get(membersSheetID, currentMembersRange);
 
@@ -92,7 +92,19 @@ namespace QCS
                     {
 
                         if (el.Count > 0)
-                            qcsEmails.Add((el[0]).ToString().ToLower().Trim());
+                        {
+                            if ((string)el[0] == "Not Provided")
+                            {
+
+                                qcsEmails.Add(((string)el[1]).ToString().ToLower().Trim());
+                            }
+                            else
+                            {
+                                qcsEmails.Add(((string)el[0]).ToString().ToLower().Trim());
+
+                            }
+
+                        }
                         else
                         {
                             Console.WriteLine("Empty email detected. Please check spreadsheet");
@@ -113,11 +125,11 @@ namespace QCS
                         }
                         else
                         {
-                            
 
 
-                    
-                            if (qcsEmails.Find(e=>e==wr.Email)!=null)
+
+
+                            if (qcsEmails.Find(e => e == wr.Email) != null)
                             {
                                 //Email exists, we are good to go.
                                 usersToWhitelist.Add(new WhitelistApproved(wr));
