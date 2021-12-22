@@ -8,8 +8,8 @@ namespace QCS
     {
         private static readonly HttpClient client = new HttpClient();
         public String uuid { get; set; }
-        public WhitelistApproved(String username, String email) : base(username, email) { uuid = ""; }
-        public WhitelistApproved(WhiteListRequest wlr) : base(wlr.Username, wlr.Email) { uuid = ""; }
+        public WhitelistApproved(String username, String email, String studentNumber) : base(username, email, studentNumber) { uuid = ""; }
+        public WhitelistApproved(WhiteListRequest wlr) : base(wlr.Username, wlr.Email, wlr.studentNumber) { uuid = ""; }
 
         public async Task<String> GetJSON()
         {

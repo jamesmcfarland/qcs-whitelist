@@ -55,7 +55,7 @@ namespace QCS
 
 
                 //Get form responses
-                String formRange = "whitelist!B2:C";
+                String formRange = "whitelist!B2:E";
                 SpreadsheetsResource.ValuesResource.GetRequest formRequest =
                         service.Spreadsheets.Values.Get(formSheetID, formRange);
 
@@ -64,7 +64,7 @@ namespace QCS
                 IList<IList<Object>> formValues = formResponse.Values;
 
                 //Get current member emails
-                String currentMembersRange = "FULL LIST (FOR SU)!E2:F";
+                String currentMembersRange = "FULL LIST (FOR SU)!D2:F";
                 SpreadsheetsResource.ValuesResource.GetRequest currentMembersRequest =
                         service.Spreadsheets.Values.Get(membersSheetID, currentMembersRange);
 
@@ -78,31 +78,59 @@ namespace QCS
                     List<WhiteListRequest> usersToCheck = new List<WhiteListRequest>();
                     foreach (var row in formValues)
                     {
-                        if (row.Count > 0)
+                        if (row.Count != 3)
                         {
-                            if (row[0] != null && row[1] != null)
+                            if (!row[0].Sanitise().IsNullOrEmpty() && !row[1].Sanitise().IsNullOrEmpty() && !row[2].Sanitise().IsNullOrEmpty())
                             {
-                                usersToCheck.Add(new WhiteListRequest(row[1].ToString(), row[0].ToString().ToLower().Trim()));
+
+                                usersToCheck.Add(new WhiteListRequest(row[1].Sanitise(), row[0].Sanitise(), row[2].Sanitise()));
+
+
+                            }
+                            else
+                            {
+                                if (row[0].Sanitise().IsNullOrEmpty() && row[1].Sanitise().IsNullOrEmpty() && row[2].Sanitise().IsNullOrEmpty())
+                                {
+                                    //We've reached the end. Break;
+                                    break;
+                                }
+                                Console.WriteLine("Error processing row " + (row[0].Sanitise().IsNullOrEmpty()) + (row[1].Sanitise().IsNullOrEmpty()) + (row[2].Sanitise().IsNullOrEmpty()));
                             }
                         }
                     }
-                    //Transfer the QCS emails into a List
-                    List<String> qcsEmails = new List<String>();
+                    //Transfer the emails and student numbers  into a List
+                    List<String[]> studentRecords = new List<String[]>();
                     currentMemberEmails.ToList().ForEach(el =>
                     {
 
                         if (el.Count > 0)
                         {
-                            if ((string)el[0] == "Not Provided")
+                            string[] data = new string[2];
+
+
+                            if ((string)el[1] == "Not Provided")
                             {
 
-                                qcsEmails.Add(((string)el[1]).ToString().ToLower().Trim());
+                                data[0] = el[2].Sanitise();
                             }
                             else
                             {
-                                qcsEmails.Add(((string)el[0]).ToString().ToLower().Trim());
+                                data[0] = el[1].Sanitise();
 
                             }
+                            int studentNo;
+                            if (Int32.TryParse(el[0].Sanitise(), out studentNo))
+                            {
+                                if (studentNo != 0)
+                                    data[1] = studentNo.ToString();
+                                else data[1] = "-1";
+                            }
+                            else
+                            {
+                                data[1] = "-1";
+                            }
+
+                            studentRecords.Add(data);
 
                         }
                         else
@@ -129,9 +157,13 @@ namespace QCS
 
 
 
-                            if (qcsEmails.Find(e => e == wr.Email) != null)
+                            if (studentRecords.Find(e => e[0] == wr.Email) != null)
                             {
                                 //Email exists, we are good to go.
+                                usersToWhitelist.Add(new WhitelistApproved(wr));
+                            }
+                            else if (wr.studentNumber != "-1" && studentRecords.Find(e => e[1] == wr.studentNumber) != null)
+                            {
                                 usersToWhitelist.Add(new WhitelistApproved(wr));
                             }
                             else
@@ -144,11 +176,25 @@ namespace QCS
 
                     }
 
+                    //Just for security
+                    usersToWhitelist = usersToWhitelist.OrderBy(e => e.Username).ToList();
+
+                    //Remove duplicates
+
+                    List<WhitelistApproved> usersToWhiteList_noDuplicates = new List<WhitelistApproved>();
+                    usersToWhitelist.ForEach(usr =>
+                     {
+                         if (!usersToWhiteList_noDuplicates.Any(u => u.isSameUser(usr.Username)))
+                         {
+                             usersToWhiteList_noDuplicates.Add(usr);
+                         }
+                     });
+
 
                     //Now, we need to get the UUIDs of the player names and then generate the appropiate JSON.
 
                     List<String> jsonData = new List<string>();
-                    foreach (WhitelistApproved wLA in usersToWhitelist)
+                    foreach (WhitelistApproved wLA in usersToWhiteList_noDuplicates)
                     {
                         try
                         {
@@ -178,6 +224,8 @@ namespace QCS
             } while (true);
         }
     }
+
+
 
 
 }
