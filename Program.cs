@@ -78,7 +78,7 @@ namespace QCS
                     List<WhiteListRequest> usersToCheck = new List<WhiteListRequest>();
                     foreach (var row in formValues)
                     {
-                        if (row.Count != 3)
+                        if (row.Count > 0)
                         {
                             if (!row[0].Sanitise().IsNullOrEmpty() && !row[1].Sanitise().IsNullOrEmpty() && !row[2].Sanitise().IsNullOrEmpty())
                             {
