@@ -1,7 +1,9 @@
 credentials.json
 token.json
 whitelist.json
+key.json
 spreadsheets.txt
 bin
 .vscode
 obj
+*.json:Zone.Identifier

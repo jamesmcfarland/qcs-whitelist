@@ -30,22 +30,9 @@ namespace QCS
             do
             {
                 Console.WriteLine("Beginning run");
-                UserCredential credential;
-                using (var stream =
-                    new FileStream("credentials.json", FileMode.Open, FileAccess.Read))
-                {
-                    // The file token.json stores the user's access and refresh tokens, and is created
-                    // automatically when the authorization flow completes for the first time.
-                    string credPath = "token.json";
-                    credential = GoogleWebAuthorizationBroker.AuthorizeAsync(
-                        GoogleClientSecrets.FromStream(stream).Secrets,
-                        Scopes,
-                        "user",
-                        CancellationToken.None,
-                        new FileDataStore(credPath, true)).Result;
-                    Console.WriteLine("Credential file saved to: " + credPath);
-                }
-
+                GoogleCredential credential;
+                string[] scopes = {SheetsService.Scope.SpreadsheetsReadonly};
+                credential =GoogleCredential.FromFile("key.json").CreateScoped(scopes);
                 // Create Google Sheets API service.
                 var service = new SheetsService(new BaseClientService.Initializer()
                 {
