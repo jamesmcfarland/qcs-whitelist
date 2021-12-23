@@ -13,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup >
-    <None Update="credentials.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Update="key.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
   <ItemGroup >
     <None Update="spreadsheets.txt" CopyToOutputDirectory="PreserveNewest" />
