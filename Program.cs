@@ -16,7 +16,7 @@ namespace QCS
         static string ApplicationName = "QCS Whitelister.";
 
         static string WHITELIST_FILEPATH = "/opt/minecraft-new/whitelist.json";
-        static int RUN_MINS = 5;
+        static int RUN_MINS = 15;
         async static Task Main(string[] args)
         {
             Console.WriteLine("QCS Minecraft Whitelister\nIn startup");
